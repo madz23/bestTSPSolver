@@ -86,8 +86,43 @@ class TSPSolver:
 	'''
 
 	def greedy( self,time_allowance=60.0 ):
-		pass
-	
+		start_time = time.time()
+		results = {};
+		cities = self._scenario.getCities()
+		i = 1
+		# get start node ( node 0 ):
+		start = cities[0]
+		isFullPath = False
+		# is full path is never modified, but we shouldn't ever hit an infinite loop
+		while(not isFullPath):
+			# initialize a visited nodes list
+			visited = [start];
+			# while we haven't put every node:
+			while (len(visited) != len(cities)):
+				current = visited[-1]
+				currentBest = None;
+				# add the next closest node:
+				for city in cities:
+					if city not in visited:
+						if currentBest == None or current.costTo(city) <= current.costTo(currentBest):
+							currentBest = city
+				visited.append(currentBest)
+			# check for a path back to node 1, otherwise repeat. If we have hit every node, return infinity.
+			if(visited[-1].costTo(cities[0]) != np.inf or i == len(cities) - 1):
+				end_time = time.time()
+				bssf = TSPSolution(visited)
+				results['cost'] = bssf.cost if i != len(cities) - 1 else math.inf
+				results['time'] = end_time - start_time
+				results['count'] = i
+				results['soln'] = bssf
+				results['max'] = None
+				results['total'] = None
+				results['pruned'] = None
+				return results
+			else:
+				start = cities[i]
+				i += 1
+
 	
 	
 	''' <summary>
