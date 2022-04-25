@@ -18,7 +18,8 @@ import numpy as np
 from TSPClasses import *
 import heapq
 import itertools
-import TSPfunctions as f
+import TSP_BB_functions as bb
+import TSP_PSO as PSO
 
 
 
@@ -87,7 +88,7 @@ class TSPSolver:
 
 	def greedy( self,time_allowance=60.0 ):
 		start_time = time.time()
-		results = {};
+		results = {}
 		cities = self._scenario.getCities()
 		i = 1
 		# get start node ( node 0 ):
@@ -96,11 +97,11 @@ class TSPSolver:
 		# is full path is never modified, but we shouldn't ever hit an infinite loop
 		while(not isFullPath):
 			# initialize a visited nodes list
-			visited = [start];
+			visited = [start]
 			# while we haven't put every node:
 			while (len(visited) != len(cities)):
 				current = visited[-1]
-				currentBest = None;
+				currentBest = None
 				# add the next closest node:
 				for city in cities:
 					if city not in visited:
@@ -166,7 +167,7 @@ class TSPSolver:
 			matrix.append([])
 			for j in range(ncities):
 				matrix[i].append(cities[i].costTo(cities[j]))
-		state0 = f.State(matrix)
+		state0 = bb.State(matrix)
 		total += 1
 		#---------------------------------------------------
 		"""
@@ -245,6 +246,90 @@ class TSPSolver:
 	'''
 		
 	def fancy( self,time_allowance=60.0 ):
+		np.random.seed(0)
+		cities = self._scenario.getCities()
+		ncities = len(cities)
+		basePath = [i for i in range(1,ncities)]
+		count = 0
+		pruned = 0
+		total = 0
+		pqmax = 0
+		matrix = []
+		route = []
+
+		start_time = time.time()
+		for i in range(ncities):
+			matrix.append([])
+			for j in range(ncities):
+				matrix[i].append(cities[i].costTo(cities[j]))
+		# print(np.matrix(matrix))
+
+		"""
+		Creation of the particle swarm
+		"""
+		particleSwarm = []
+
+		path = np.random.permutation(basePath).tolist()
+		path.insert(0,0)
+		bestParticle = PSO.Particle(path,matrix)
+		for i in range(ncities**2):
+			path = np.random.permutation(basePath).tolist()
+			path.insert(0,0)
+			# print("path   .   .  ",path)
+			particleSwarm.append(PSO.Particle(path,matrix))
+			# print(particleSwarm[i])
+			if(particleSwarm[i] > bestParticle):
+				bestParticle = particleSwarm[i]
+		"""
+		The actual swarming part
+		"""
+		allSame = False
+		iterations = 0
+		while(not allSame):
+			# print(iterations,"_______________________________________________________")
+			for particle in particleSwarm:
+				# print(particle,end=" --> ")
+				particle.moveTo(bestParticle)
+				# print(particle," ",bestParticle)
+				if(particle > bestParticle):
+					bestParticle = particle
+					print("new best")
+			allSame = True
+
+			#check duplicates
+			for i in particleSwarm:
+				for j in particleSwarm:
+					if(i.path != j.path):
+						allSame = False				
+							
+			if (iterations > 1000):
+				allSame = True
+			iterations += 1
+
+			
+		end_time = time.time()
+		print("_____________________________")
+		print(bestParticle)
+		print("______________________________")
+
+		"""
+		Results calculation
+		"""
+		for i in bestParticle.path:
+			route.append(cities[i])
+		bssf = TSPSolution(route)
+		results = {}
+
+		results['cost'] = bssf.cost
+		results['time'] = (end_time - start_time)
+		results['count'] = count
+		results['soln'] = bssf
+		results['max'] = pqmax
+		results['total'] = total
+		results['pruned'] = pruned 
+		print(results)
+		return results
+
 		pass
 		
 
