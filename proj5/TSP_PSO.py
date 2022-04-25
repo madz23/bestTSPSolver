@@ -30,7 +30,7 @@ class Particle:
         self.localSearch()
 
         self.computeCost()
-        
+
 
     def swap(self, i, j):
         temp = self.path[i]
@@ -39,16 +39,17 @@ class Particle:
 
     def localSearch(self):
         newPath = self.path[:]
-        i = random.randint(2,len(newPath))
-        j = random.randint(2,len(newPath))
+        i = random.randint(2,len(newPath)-1)
+        j = random.randint(2,len(newPath)-1)
         temp = newPath[i]
         newPath[i] = newPath[j]
         newPath[j] = temp
-        cost = 0
+        newcost = 0
         for i in range(len(self.path)-1):
-            cost += self.matrix[self.path[i]][self.path[i+1]]
-        cost += self.matrix[self.path[-1]][self.path[0]]
-        self.cost = cost
+            newcost += self.matrix[self.path[i]][self.path[i+1]]
+        newcost += self.matrix[self.path[-1]][self.path[0]]
+        if(newcost <= self.cost):
+            self.path = newPath
 
     def __str__(self) -> str:
         return str(self.path) + " " +str(self.cost)
