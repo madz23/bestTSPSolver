@@ -272,7 +272,7 @@ class TSPSolver:
 		path = np.random.permutation(basePath).tolist()
 		path.insert(0,0)
 		bestParticle = PSO.Particle(path,matrix)
-		for i in range(ncities**2):
+		for i in range(ncities**3):                              #size of swarm
 			path = np.random.permutation(basePath).tolist()
 			path.insert(0,0)
 			# print("path   .   .  ",path)
@@ -283,10 +283,10 @@ class TSPSolver:
 		"""
 		The actual swarming part
 		"""
-		allSame = False
+		
 		iterations = 0
-		while(not allSame):
-			# print(iterations,"_______________________________________________________")
+		while(len(particleSwarm) > 1):
+			print(iterations,len(particleSwarm))
 			for particle in particleSwarm:
 				# print(particle,end=" --> ")
 				particle.moveTo(bestParticle)
@@ -297,15 +297,20 @@ class TSPSolver:
 			allSame = True
 
 			#check duplicates
-			for i in particleSwarm:
-				for j in particleSwarm:
-					if(i.path != j.path):
-						allSame = False				
-							
-			if (iterations > 1000):
-				allSame = True
-			iterations += 1
+			# for i in particleSwarm:
+			# 	for j in particleSwarm:
+			# 		if(i.path != j.path):
+			# 			allSame = False
 
+			
+			place = 0
+			while place <= len(particleSwarm)-1 :
+				for i in range(len(particleSwarm)-1,place,-1):
+					if particleSwarm[place] == particleSwarm[i]:
+						# print(particleSwarm[place],particleSwarm[i],len(particleSwarm))
+						del particleSwarm[i]
+				place += 1
+			iterations += 1
 			
 		end_time = time.time()
 		print("_____________________________")
