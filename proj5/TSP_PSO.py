@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+import random
 
 import numpy as np
 
@@ -26,6 +27,7 @@ class Particle:
         i = np.random.randint(len(self.path))
         j = self.path.index(particle.path[i])
         self.swap(i,j)
+        self.localSearch()
 
         self.computeCost()
         
@@ -34,6 +36,19 @@ class Particle:
         temp = self.path[i]
         self.path[i] = self.path[j]
         self.path[j] = temp
+
+    def localSearch(self):
+        newPath = self.path[:]
+        i = random.randint(2,len(newPath))
+        j = random.randint(2,len(newPath))
+        temp = newPath[i]
+        newPath[i] = newPath[j]
+        newPath[j] = temp
+        cost = 0
+        for i in range(len(self.path)-1):
+            cost += self.matrix[self.path[i]][self.path[i+1]]
+        cost += self.matrix[self.path[-1]][self.path[0]]
+        self.cost = cost
 
     def __str__(self) -> str:
         return str(self.path) + " " +str(self.cost)
