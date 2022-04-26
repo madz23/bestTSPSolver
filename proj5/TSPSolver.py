@@ -269,10 +269,19 @@ class TSPSolver:
 		"""
 		particleSwarm = []
 
-		path = np.random.permutation(basePath).tolist()
-		path.insert(0,0)
+
+		# path = np.random.permutation(basePath).tolist()
+		# path.insert(0,0)
+		routeAsCities = self.greedy()['soln'].route
+		path = [city._index for city in routeAsCities]
+		print(path[0])
+		while(path[0] != 0):
+			# print('iteratinginhere')
+			path = path[1:] + path[:1]
 		bestParticle = PSO.Particle(path,matrix)
-		for i in range(int(ncities ** 3 / (ncities / 2))):                              #size of swarm
+		i = 0
+		swarmSize = int(ncities ** 3 / (ncities / 2))
+		while(i <= swarmSize or bestParticle.cost == np.inf):                              #size of swarm
 			path = np.random.permutation(basePath).tolist()
 			path.insert(0,0)
 			# print("path   .   .  ",path)
@@ -280,6 +289,7 @@ class TSPSolver:
 			# print(particleSwarm[i])
 			if(particleSwarm[i] > bestParticle):
 				bestParticle = particleSwarm[i]
+			i += 1
 		"""
 		The actual swarming part
 		"""
