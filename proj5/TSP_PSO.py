@@ -27,7 +27,8 @@ class Particle:
         i = np.random.randint(len(self.path))
         j = self.path.index(particle.path[i])
         self.swap(i,j)
-        self.localSearch()
+        if(random.randint(0,2) == 1):
+            self.localSearch()
 
         self.computeCost()
 

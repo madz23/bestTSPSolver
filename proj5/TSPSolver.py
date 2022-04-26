@@ -272,7 +272,7 @@ class TSPSolver:
 		path = np.random.permutation(basePath).tolist()
 		path.insert(0,0)
 		bestParticle = PSO.Particle(path,matrix)
-		for i in range(int(ncities**3/(ncities/2))):                              #size of swarm
+		for i in range(int(75)):                              #size of swarm
 			path = np.random.permutation(basePath).tolist()
 			path.insert(0,0)
 			# print("path   .   .  ",path)
