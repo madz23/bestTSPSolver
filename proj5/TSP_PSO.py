@@ -23,10 +23,10 @@ class Particle:
         #         j = self.path.index(particle.path[i])
         #         self.swap(i,j)
         #         break
-
-        i = np.random.randint(len(self.path))
-        j = self.path.index(particle.path[i])
-        self.swap(i,j)
+        for x in range(3):
+            i = np.random.randint(len(self.path))
+            j = self.path.index(particle.path[i])
+            self.swap(i,j)
         if(random.randint(0,2) == 1):
             self.localSearch()
 
@@ -40,17 +40,20 @@ class Particle:
 
     def localSearch(self):
         newPath = self.path[:]
-        i = random.randint(2,len(newPath)-1)
-        j = random.randint(2,len(newPath)-1)
+        i = np.random.randint(2,len(newPath)-1)
+        j = np.random.randint(2,len(newPath)-1)
         temp = newPath[i]
         newPath[i] = newPath[j]
         newPath[j] = temp
         newcost = 0
         for i in range(len(self.path)-1):
-            newcost += self.matrix[self.path[i]][self.path[i+1]]
-        newcost += self.matrix[self.path[-1]][self.path[0]]
-        if(newcost <= self.cost):
+            newcost += self.matrix[newPath[i]][newPath[i+1]]
+        newcost += self.matrix[newPath[-1]][newPath[0]]
+        # print(newcost)
+        if(newcost < self.cost):
             self.path = newPath
+            self.computeCost()
+            # self.localSearch()
 
     def __str__(self) -> str:
         return str(self.path) + " " +str(self.cost)
