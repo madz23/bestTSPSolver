@@ -28,7 +28,7 @@ class Particle:
             j = self.path.index(particle.path[i])
             self.swap(i,j)
         if(random.randint(0,2) == 1):
-            self.localSearch()
+            self.localSearchStep()
 
         self.computeCost()
 
@@ -37,8 +37,27 @@ class Particle:
         temp = self.path[i]
         self.path[i] = self.path[j]
         self.path[j] = temp
+    
+    def fullLocalSearch(self):
+        possible = True
+        while possible:
+            swapped = False
+            for i in range(1,len(self.path)):
+                for j in range(i,len(self.path)):
+                    newPath = self.path.copy()
+                    tempP = Particle(newPath,self.matrix)
+                    tempP.swap(i,j)
+                    tempP.computeCost()
+                    if tempP.cost < self.cost:
+                        self.swap(i,j)
+                        self.computeCost()
+                        swapped = True
+                        break
+            if not swapped:
+                possible = False
 
-    def localSearch(self):
+
+    def localSearchStep(self):
         newPath = self.path[:]
         i = np.random.randint(2,len(newPath)-1)
         j = np.random.randint(2,len(newPath)-1)
