@@ -246,7 +246,7 @@ class TSPSolver:
 	'''
 		
 	def fancy( self,time_allowance=60.0 ):
-		np.random.seed(0)
+		# np.random.seed(0)
 		cities = self._scenario.getCities()
 		ncities = len(cities)
 		basePath = [i for i in range(1,ncities)]
@@ -280,8 +280,10 @@ class TSPSolver:
 			path = path[1:] + path[:1]
 		bestParticle = PSO.Particle(path,matrix)
 		i = 0
-		swarmSize = int(ncities ** 3 / (ncities / 2))
-		while(i <= swarmSize or bestParticle.cost == np.inf):                              #size of swarm
+		# swarmSize = int(ncities ** 3 / (ncities / 2))
+		swarmSize = ncities*3
+		while(i <= swarmSize or (bestParticle.cost == np.inf and i <swarmSize * 2)):   
+			print(i)                           #size of swarm
 			path = np.random.permutation(basePath).tolist()
 			path.insert(0,0)
 			# print("path   .   .  ",path)
@@ -296,15 +298,20 @@ class TSPSolver:
 		
 		iterations = 0
 		while(len(particleSwarm) > 1):
-		# while(iterations < ncities*10):
+		# while(iterations < ncities):
+			# time2 = time.time()
 			print(iterations,len(particleSwarm))
 			for particle in particleSwarm:
 				# print(particle,end=" --> ")
+				# time1 = time.time()
 				particle.moveTo(bestParticle)
+				# print(time.time() - time1)
 				# print(particle," ",bestParticle)
 				if(particle > bestParticle):
 					bestParticle = particle
+					bestParticle.fullLocalSearch()
 					print("new best")
+			# print(time.time()-time2)
 			# bestParticle.localSearch()
 			#check duplicates
 			# for i in particleSwarm:
@@ -337,7 +344,7 @@ class TSPSolver:
 		"""
 		for i in bestParticle.path:
 			route.append(cities[i])
-		print(route)
+		# print(route)
 		bssf = TSPSolution(route)
 		results = {}
 

@@ -23,12 +23,12 @@ class Particle:
         #         j = self.path.index(particle.path[i])
         #         self.swap(i,j)
         #         break
-        for x in range(3):
+        for x in range(int(len(self.path)/10)+1):
             i = np.random.randint(len(self.path))
             j = self.path.index(particle.path[i])
             self.swap(i,j)
-        if(random.randint(0,2) == 1):
-            self.localSearchStep()
+        if(random.randint(0,len(self.path)*5) == 1):
+            self.fullLocalSearch()
 
         self.computeCost()
 
