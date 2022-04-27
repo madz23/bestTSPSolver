@@ -87,6 +87,7 @@ class TSPSolver:
 	'''
 
 	def greedy( self,time_allowance=60.0 ):
+		"""Austin's greedy implementation"""
 		start_time = time.time()
 		results = {}
 		cities = self._scenario.getCities()
@@ -95,11 +96,12 @@ class TSPSolver:
 		start = cities[0]
 		isFullPath = False
 		# is full path is never modified, but we shouldn't ever hit an infinite loop
-		while(not isFullPath):
+		while not isFullPath:
+			# print(i)
 			# initialize a visited nodes list
 			visited = [start]
 			# while we haven't put every node:
-			while (len(visited) != len(cities)):
+			while len(visited) != len(cities):
 				current = visited[-1]
 				currentBest = None
 				# add the next closest node:
@@ -109,10 +111,24 @@ class TSPSolver:
 							currentBest = city
 				visited.append(currentBest)
 			# check for a path back to node 1, otherwise repeat. If we have hit every node, return infinity.
-			if(visited[-1].costTo(cities[0]) != np.inf or i == len(cities) - 1):
+			cost = 0
+			for j in range(len(visited) - 1):
+				cost += visited[j].costTo(visited[j+1])
+				# print(j,visited[j]._index,cost)
+				print(j, visited[j].costTo(visited[j+1]))
+			cost += visited[-1].costTo(visited[0])
+			# print(len(visited) -1, visited[-1]._index, cost)
+			# print(visited[-1].costTo[visited[0]], cost)
+			print(cost)
+
+
+			print(i)
+			if cost != np.inf or i == len(cities) - 1:
+				print(i)
 				end_time = time.time()
 				bssf = TSPSolution(visited)
-				results['cost'] = bssf.cost if i != len(cities) - 1 else math.inf
+				print([city._index for city in visited])
+				results['cost'] = cost
 				results['time'] = end_time - start_time
 				results['count'] = i
 				results['soln'] = bssf
@@ -246,11 +262,13 @@ class TSPSolver:
 	'''
 		
 	def fancy( self,time_allowance=60.0 ):
-		# np.random.seed(0)
+		"""This is our particle swarm optimization algorithm.
+		It creates particles that move towards the single best solution in their search space
+		It is not guaranteed to find the optimal solutions, but it is guaranteed to be better than Greed"""
 		cities = self._scenario.getCities()
 		ncities = len(cities)
 		basePath = [i for i in range(1,ncities)]
-		count = 0
+		count = 1
 		pruned = 0
 		total = 0
 		pqmax = 0
@@ -262,33 +280,25 @@ class TSPSolver:
 			matrix.append([])
 			for j in range(ncities):
 				matrix[i].append(cities[i].costTo(cities[j]))
-		# print(np.matrix(matrix))
 
 		"""
 		Creation of the particle swarm
 		"""
 		particleSwarm = []
 
-
-		# path = np.random.permutation(basePath).tolist()
-		# path.insert(0,0)
 		routeAsCities = self.greedy()['soln'].route
 		path = [city._index for city in routeAsCities]
 		print(path[0])
-		while(path[0] != 0):
-			# print('iteratinginhere')
+		while path[0] != 0:
 			path = path[1:] + path[:1]
 		bestParticle = PSO.Particle(path,matrix)
 		i = 0
-		# swarmSize = int(ncities ** 3 / (ncities / 2))
 		swarmSize = ncities*3
-		while(i <= swarmSize or (bestParticle.cost == np.inf and i <swarmSize * 2)):   
+		while i <= swarmSize or (bestParticle.cost == np.inf and i < swarmSize * 2):
 			print(i)                           #size of swarm
 			path = np.random.permutation(basePath).tolist()
 			path.insert(0,0)
-			# print("path   .   .  ",path)
 			particleSwarm.append(PSO.Particle(path,matrix))
-			# print(particleSwarm[i])
 			if(particleSwarm[i] > bestParticle):
 				bestParticle = particleSwarm[i]
 			i += 1
@@ -297,38 +307,20 @@ class TSPSolver:
 		"""
 		
 		iterations = 0
-		while(len(particleSwarm) > 1):
-		# while(iterations < ncities):
-			# time2 = time.time()
+		while len(particleSwarm) > 1:
 			print(iterations,len(particleSwarm))
 			for particle in particleSwarm:
-				# print(particle,end=" --> ")
-				# time1 = time.time()
 				particle.moveTo(bestParticle)
-				# print(time.time() - time1)
-				# print(particle," ",bestParticle)
 				if(particle > bestParticle):
 					bestParticle = particle
 					bestParticle.fullLocalSearch()
 					print("new best")
-			# print(time.time()-time2)
-			# bestParticle.localSearch()
-			#check duplicates
-			# for i in particleSwarm:
-			# 	for j in particleSwarm:
-			# 		if(i.path != j.path):
-			# 			allSame = False
-
-			# i = 0
-			# for i in range(len(particleSwarm)-1,0,-1):
-			# 	if particleSwarm[i] == bestParticle:
-			# 		del particleSwarm[i]
+					count += 1
 
 			place = 0
 			while place <= len(particleSwarm)-1 :
 				for i in range(len(particleSwarm)-1,place,-1):
 					if particleSwarm[place] == particleSwarm[i]:
-						# print(particleSwarm[place],particleSwarm[i],len(particleSwarm))
 						del particleSwarm[i]
 				place += 1
 
