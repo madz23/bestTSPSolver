@@ -97,7 +97,6 @@ class TSPSolver:
 		isFullPath = False
 		# is full path is never modified, but we shouldn't ever hit an infinite loop
 		while not isFullPath:
-			# print(i)
 			# initialize a visited nodes list
 			visited = [start]
 			# while we haven't put every node:
@@ -114,20 +113,12 @@ class TSPSolver:
 			cost = 0
 			for j in range(len(visited) - 1):
 				cost += visited[j].costTo(visited[j+1])
-				# print(j,visited[j]._index,cost)
-				print(j, visited[j].costTo(visited[j+1]))
 			cost += visited[-1].costTo(visited[0])
-			# print(len(visited) -1, visited[-1]._index, cost)
-			# print(visited[-1].costTo[visited[0]], cost)
-			print(cost)
+			
 
-
-			print(i)
 			if cost != np.inf or i == len(cities) - 1:
-				print(i)
 				end_time = time.time()
 				bssf = TSPSolution(visited)
-				print([city._index for city in visited])
 				results['cost'] = cost
 				results['time'] = end_time - start_time
 				results['count'] = i
@@ -200,7 +191,6 @@ class TSPSolver:
 		while not PQ.empty() and time.time()-start_time < time_allowance:
 			if(len(PQ.queue) > pqmax):
 				pqmax = len(PQ.queue)
-			# print(pqmax)
 			parent = PQ.get()
 			if (parent[1].lb > bssf_cost):
 				pruned += 1
@@ -289,14 +279,12 @@ class TSPSolver:
 
 		routeAsCities = self.greedy()['soln'].route
 		path = [city._index for city in routeAsCities]
-		# print(path[0])
 		while path[0] != 0:
 			path = path[1:] + path[:1]
 		bestParticle = PSO.Particle(path,matrix)
 		i = 0
 		swarmSize = ncities*3
 		while i <= swarmSize or (bestParticle.cost == np.inf and i < swarmSize * 2):
-			# print(i)                           #size of swarm
 			path = np.random.permutation(basePath).tolist()
 			path.insert(0,0)
 			particleSwarm.append(PSO.Particle(path,matrix))
