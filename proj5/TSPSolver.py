@@ -265,6 +265,7 @@ class TSPSolver:
 		"""This is our particle swarm optimization algorithm.
 		It creates particles that move towards the single best solution in their search space
 		It is not guaranteed to find the optimal solutions, but it is guaranteed to be better than Greed"""
+		np.random.seed(0)
 		cities = self._scenario.getCities()
 		ncities = len(cities)
 		basePath = [i for i in range(1,ncities)]
@@ -288,14 +289,14 @@ class TSPSolver:
 
 		routeAsCities = self.greedy()['soln'].route
 		path = [city._index for city in routeAsCities]
-		print(path[0])
+		# print(path[0])
 		while path[0] != 0:
 			path = path[1:] + path[:1]
 		bestParticle = PSO.Particle(path,matrix)
 		i = 0
 		swarmSize = ncities*3
 		while i <= swarmSize or (bestParticle.cost == np.inf and i < swarmSize * 2):
-			print(i)                           #size of swarm
+			# print(i)                           #size of swarm
 			path = np.random.permutation(basePath).tolist()
 			path.insert(0,0)
 			particleSwarm.append(PSO.Particle(path,matrix))
@@ -308,13 +309,13 @@ class TSPSolver:
 		
 		iterations = 0
 		while len(particleSwarm) > 1:
-			print(iterations,len(particleSwarm))
+			# print(iterations,len(particleSwarm))
 			for particle in particleSwarm:
 				particle.moveTo(bestParticle)
 				if(particle > bestParticle):
 					bestParticle = particle
 					bestParticle.fullLocalSearch()
-					print("new best")
+					# print("new best")
 					count += 1
 
 			place = 0
@@ -350,7 +351,6 @@ class TSPSolver:
 		print(results)
 		return results
 
-		pass
 		
 
 
