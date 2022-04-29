@@ -2,6 +2,7 @@
 import random
 
 import numpy as np
+np.random.seed(0)
 
 
 class Particle:
@@ -18,11 +19,6 @@ class Particle:
         self.cost = cost
 
     def moveTo(self, particle):
-        # for i in range(len(self.path)):
-        #     if(self.path[i] != particle.path[i]):
-        #         j = self.path.index(particle.path[i])
-        #         self.swap(i,j)
-        #         break
         for x in range(int(len(self.path)/10)+1):
             i = np.random.randint(len(self.path))
             j = self.path.index(particle.path[i])
